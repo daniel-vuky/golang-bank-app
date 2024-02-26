@@ -48,7 +48,7 @@ jobs:
         run: make migrateup
 
       - name: Create .env file
-        run: echo "DATABASE_URL=postgres://root:secret@localhost:5432/bank_app?sslmode=disable" > .env
+        run: echo 'POSTGRES_SOURCE="postgresql://root:secret@localhost:5432/bank_app?sslmode=disable"' > .env
 
       - name: Test
         run: make test

@@ -35,7 +35,8 @@ func (q *Queries) CreateTransfer(ctx context.Context, arg CreateTransferParams) 
 }
 
 const deleteTransfer = `-- name: DeleteTransfer :exec
-DELETE FROM transfers
+DELETE
+FROM transfers
 WHERE id = $1
 `
 
@@ -45,10 +46,10 @@ func (q *Queries) DeleteTransfer(ctx context.Context, id int64) error {
 }
 
 const getTransfer = `-- name: GetTransfer :one
-SELECT id, from_account_id, to_account_id, amount, created_at FROM transfers
+SELECT id, from_account_id, to_account_id, amount, created_at
+FROM transfers
 WHERE id = $1
-LIMIT 1
-FOR NO KEY UPDATE
+LIMIT 1 FOR NO KEY UPDATE
 `
 
 func (q *Queries) GetTransfer(ctx context.Context, id int64) (Transfer, error) {
@@ -65,12 +66,12 @@ func (q *Queries) GetTransfer(ctx context.Context, id int64) (Transfer, error) {
 }
 
 const listTransfers = `-- name: ListTransfers :many
-SELECT id, from_account_id, to_account_id, amount, created_at FROM transfers
-WHERE from_account_id = $1 or to_account_id = $2
+SELECT id, from_account_id, to_account_id, amount, created_at
+FROM transfers
+WHERE from_account_id = $1
+   or to_account_id = $2
 ORDER BY id DESC
-LIMIT $3
-OFFSET $4
-FOR NO KEY UPDATE
+LIMIT $3 OFFSET $4 FOR NO KEY UPDATE
 `
 
 type ListTransfersParams struct {
@@ -115,7 +116,8 @@ func (q *Queries) ListTransfers(ctx context.Context, arg ListTransfersParams) ([
 }
 
 const updateTransfer = `-- name: UpdateTransfer :exec
-UPDATE transfers set amount = $2
+UPDATE transfers
+set amount = $2
 WHERE id = $1
 `
 

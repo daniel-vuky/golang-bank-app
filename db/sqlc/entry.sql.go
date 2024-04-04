@@ -33,7 +33,8 @@ func (q *Queries) CreateEntry(ctx context.Context, arg CreateEntryParams) (Entry
 }
 
 const deleteEntry = `-- name: DeleteEntry :exec
-DELETE FROM entries
+DELETE
+FROM entries
 WHERE id = $1
 `
 
@@ -43,10 +44,10 @@ func (q *Queries) DeleteEntry(ctx context.Context, id int64) error {
 }
 
 const getEntry = `-- name: GetEntry :one
-SELECT id, account_id, amount, created_at FROM entries
+SELECT id, account_id, amount, created_at
+FROM entries
 WHERE id = $1
-LIMIT 1
-FOR NO KEY UPDATE
+LIMIT 1 FOR NO KEY UPDATE
 `
 
 func (q *Queries) GetEntry(ctx context.Context, id int64) (Entry, error) {
@@ -62,12 +63,11 @@ func (q *Queries) GetEntry(ctx context.Context, id int64) (Entry, error) {
 }
 
 const listEntries = `-- name: ListEntries :many
-SELECT id, account_id, amount, created_at FROM entries
+SELECT id, account_id, amount, created_at
+FROM entries
 WHERE account_id = $1
 ORDER BY id DESC
-LIMIT $2
-OFFSET $3
-FOR NO KEY UPDATE
+LIMIT $2 OFFSET $3 FOR NO KEY UPDATE
 `
 
 type ListEntriesParams struct {
@@ -105,7 +105,8 @@ func (q *Queries) ListEntries(ctx context.Context, arg ListEntriesParams) ([]Ent
 }
 
 const updateEntry = `-- name: UpdateEntry :exec
-UPDATE entries set amount = $2
+UPDATE entries
+set amount = $2
 WHERE id = $1
 `
 

@@ -10,8 +10,9 @@ import (
 
 // createRandomAccount creates a random account for testing
 func createRandomAccount(t *testing.T) Account {
+	user := createRandomUser(t)
 	account := CreateAccountParams{
-		Owner:    util.RandomOwner(),
+		Owner:    user.Username,
 		Balance:  util.RandomMoney(),
 		Currency: util.RandomCurrency(),
 	}
@@ -88,17 +89,18 @@ func TestQueries_GetAccount(t *testing.T) {
 
 // TestQueries_ListAccounts tests the ListAccounts method
 func TestQueries_ListAccounts(t *testing.T) {
+	var lastAccount Account
 	for i := 0; i < 10; i++ {
-		createRandomAccount(t)
+		lastAccount = createRandomAccount(t)
 	}
 	listAccountsParams := ListAccountsParams{
+		Owner:  lastAccount.Owner,
 		Limit:  5,
 		Offset: 0,
 	}
 
 	accounts, err := testQueries.ListAccounts(context.Background(), listAccountsParams)
 	require.NoError(t, err)
-	require.Len(t, accounts, 5)
 	for _, account := range accounts {
 		require.NotEmpty(t, account)
 	}

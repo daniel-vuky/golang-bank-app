@@ -1,5 +1,7 @@
+create-docket-network:
+	docker network create bank-network
 postgres:
-	docker run --name postgres16 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:16-alpine
+	docker run --name postgres16 --network bank-network -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:16-alpine
 createdb:
 	docker exec -it postgres16  createdb --username=root --owner=root bank_app
 migrateup:
@@ -20,4 +22,4 @@ server:
 	go run main.go
 mock:
 	mockgen -destination db/mock/store.go -package mockdb github.com/daniel-vuky/golang-bank-app/db/sqlc Store
-.PHONY: postgres createdb migrateup migrateuplastest migratedown migratedownlastest dropdb sqlc test server mock
+.PHONY: create-docket-network postgres createdb migrateup migrateuplastest migratedown migratedownlastest dropdb sqlc test server mock

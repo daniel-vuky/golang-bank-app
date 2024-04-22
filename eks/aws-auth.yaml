@@ -5,7 +5,7 @@ metadata:
   namespace: kube-system
 data:
   mapUsers: |
-    - userarn: ${{ secrets.AWS_USER_ARN }}
+    - userarn: arn:aws:iam::220923858684:user/admin_daniel_vu
       username: admin_daniel_vu
       groups:
         - system:masters

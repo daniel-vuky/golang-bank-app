@@ -49,9 +49,12 @@ jobs:
       - name: Update kubectl config
         run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
 
+      - name: Check cluster-info
+        run: kubectl cluster-info
+
       - name: Deploy image to Amazon EKS
         run: |
-          kubectl apply -f eks/aws-auth.yaml --validate=false
+          kubectl apply -f eks/aws-auth.yaml
           kubectl apply -f eks/deployment.yaml
           kubectl apply -f eks/service.yaml
           kubectl apply -f eks/ingress.yaml

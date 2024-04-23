@@ -10,6 +10,7 @@ func LoadUserRoutes(router *gin.Engine, server *Server) {
 	{
 		userGroup.POST("/", server.createUser)
 		userGroup.POST("/login", server.login)
+		userGroup.POST("/tokens/renew", server.renewAccessToken)
 	}
 }
 

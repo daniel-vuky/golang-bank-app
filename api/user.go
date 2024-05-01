@@ -3,13 +3,14 @@ package api
 import (
 	"database/sql"
 	"errors"
+	"net/http"
+	"time"
+
 	db "github.com/daniel-vuky/golang-bank-app/db/sqlc"
 	"github.com/daniel-vuky/golang-bank-app/util"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
-	"net/http"
-	"time"
 )
 
 // createUserRequest defines the request body for createUser handler

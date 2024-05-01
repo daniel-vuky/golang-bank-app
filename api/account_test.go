@@ -5,17 +5,18 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+	"time"
+
 	mockdb "github.com/daniel-vuky/golang-bank-app/db/mock"
 	db "github.com/daniel-vuky/golang-bank-app/db/sqlc"
 	"github.com/daniel-vuky/golang-bank-app/token"
 	"github.com/daniel-vuky/golang-bank-app/util"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
-	"io"
-	"net/http"
-	"net/http/httptest"
-	"testing"
-	"time"
 )
 
 // randomAccount get a random account

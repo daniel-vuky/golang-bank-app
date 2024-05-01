@@ -1,14 +1,17 @@
 package util
 
 import (
-	"github.com/spf13/viper"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
 // Config hold all the configuration of this application
 type Config struct {
+	Environment          string        `mapstructure:"ENVIRONMENT"`
 	DBDriver             string        `mapstructure:"DB_DRIVER"`
 	DBSource             string        `mapstructure:"DB_SOURCE"`
+	MigrationUrl         string        `mapstructure:"MIGRATION_URL"`
 	ServerAddress        string        `mapstructure:"HTTP_SERVER_ADDRESS"`
 	GrpcServerAddress    string        `mapstructure:"GRPC_SERVER_ADDRESS"`
 	PasetoSymmetricKey   string        `mapstructure:"PASETO_SYMMETRIC_KEY"`

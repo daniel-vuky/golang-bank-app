@@ -1,7 +1,9 @@
 create-docket-network:
 	docker network create bank-network
 postgres:
-	docker run --name postgres16 --network bank-network -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:16-alpine
+	docker run --name postgres16 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:16-alpine
+redis:
+	docker run --name redis -p 6379:6379 -d redis:7-alpine
 createdb:
 	docker exec -it postgres16  createdb --username=root --owner=root bank_app
 migrateup:
@@ -17,7 +19,7 @@ dropdb:
 sqlc:
 	sqlc generate
 test:
-	go test -v -cover ./...
+	go test -v -cover -short ./...
 server:
 	go run main.go
 mock:
@@ -32,4 +34,4 @@ proto:
     proto/*.proto
 evans:
 	evans -r repl --host localhost --port 9090
-.PHONY: create-docket-network postgres createdb migrateup migrateuplastest migratedown migratedownlastest dropdb sqlc test server mock proto evans
+.PHONY: create-docket-network postgres redis createdb migrateup migrateuplastest migratedown migratedownlastest dropdb sqlc test server mock proto evans

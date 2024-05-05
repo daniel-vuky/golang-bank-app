@@ -1,5 +1,4 @@
 name: simplebank
-version: '1.0'
 
 services:
   postgres:
@@ -15,15 +14,21 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  redis:
+    image: redis:7-alpine
+    ports:
+      - 6379:6379
   api:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - 8080:8080
+      - 9090:9090
     environment:
       DB_SOURCE: postgresql://root:secret@postgres:5432/bank_app?sslmode=disable
       GIN_MODE: release
+      REDIS_ADDRESS: redis:6379
     depends_on:
       postgres:
         condition: service_healthy

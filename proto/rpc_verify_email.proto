@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "github.com/daniel-vuky/golang-bank-app/pb";
+
+message VerifyEmailRequest {
+  int64 email_id = 1;
+  string token = 2;
+}
+
+message VerifyEmailResponse {
+  bool is_verified = 1;
+}

@@ -62,3 +62,19 @@ func ValidateEmail(email string) error {
 
 	return nil
 }
+
+func ValidateEmailId(emailId int64) error {
+	if emailId <= 0 {
+		return fmt.Errorf("email_id must be greater than 0")
+	}
+
+	return nil
+}
+
+func ValidateVerifyToken(token string) error {
+	if err := ValidateString(token, 32, 32); err != nil {
+		return err
+	}
+
+	return nil
+}

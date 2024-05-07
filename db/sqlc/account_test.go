@@ -2,8 +2,9 @@ package db
 
 import (
 	"context"
-	"github.com/daniel-vuky/golang-bank-app/util"
 	"testing"
+
+	"github.com/daniel-vuky/golang-bank-app/util"
 
 	"github.com/stretchr/testify/require"
 )
@@ -16,7 +17,7 @@ func createRandomAccount(t *testing.T) Account {
 		Balance:  util.RandomMoney(),
 		Currency: util.RandomCurrency(),
 	}
-	createdAccount, err := testQueries.CreateAccount(context.Background(), account)
+	createdAccount, err := testStore.CreateAccount(context.Background(), account)
 	require.NoError(t, err)
 	require.NotEmptyf(t, createdAccount, "created account should not be empty")
 	require.Equal(t, account.Owner, createdAccount.Owner)
@@ -42,10 +43,10 @@ func TestQueries_UpdateAccount(t *testing.T) {
 		Balance:  util.RandomMoney(),
 		Currency: account.Currency,
 	}
-	err := testQueries.UpdateAccount(context.Background(), args)
+	err := testStore.UpdateAccount(context.Background(), args)
 	require.NoError(t, err)
 
-	updatedAccount, updatedErr := testQueries.GetAccount(context.Background(), account.ID)
+	updatedAccount, updatedErr := testStore.GetAccount(context.Background(), account.ID)
 	require.NoError(t, updatedErr)
 	require.NotEmptyf(t, updatedAccount, "updated account should not be empty")
 	require.Equal(t, account.ID, updatedAccount.ID)
@@ -61,10 +62,10 @@ func TestQueries_UpdateAccountBalance(t *testing.T) {
 		ID:     account.ID,
 		Amount: util.RandomMoney(),
 	}
-	_, err := testQueries.UpdateAccountBalance(context.Background(), args)
+	_, err := testStore.UpdateAccountBalance(context.Background(), args)
 	require.NoError(t, err)
 
-	updatedAccount, updatedErr := testQueries.GetAccount(context.Background(), account.ID)
+	updatedAccount, updatedErr := testStore.GetAccount(context.Background(), account.ID)
 	require.NoError(t, updatedErr)
 	require.NotEmptyf(t, updatedAccount, "updated account should not be empty")
 	require.Equal(t, account.ID, updatedAccount.ID)
@@ -77,7 +78,7 @@ func TestQueries_UpdateAccountBalance(t *testing.T) {
 // TestQueries_GetAccount tests the GetAccount method
 func TestQueries_GetAccount(t *testing.T) {
 	account := createRandomAccount(t)
-	foundAccount, err := testQueries.GetAccount(context.Background(), account.ID)
+	foundAccount, err := testStore.GetAccount(context.Background(), account.ID)
 	require.NoError(t, err)
 	require.NotEmptyf(t, foundAccount, "found account should not be empty")
 	require.Equal(t, account.ID, foundAccount.ID)
@@ -99,7 +100,7 @@ func TestQueries_ListAccounts(t *testing.T) {
 		Offset: 0,
 	}
 
-	accounts, err := testQueries.ListAccounts(context.Background(), listAccountsParams)
+	accounts, err := testStore.ListAccounts(context.Background(), listAccountsParams)
 	require.NoError(t, err)
 	for _, account := range accounts {
 		require.NotEmpty(t, account)
@@ -109,10 +110,10 @@ func TestQueries_ListAccounts(t *testing.T) {
 // TestQueries_DeleteAccount tests the DeleteAccount method
 func TestQueries_DeleteAccount(t *testing.T) {
 	account := createRandomAccount(t)
-	err := testQueries.DeleteAccount(context.Background(), account.ID)
+	err := testStore.DeleteAccount(context.Background(), account.ID)
 	require.NoError(t, err)
 
-	deletedAccount, deletedErr := testQueries.GetAccount(context.Background(), account.ID)
+	deletedAccount, deletedErr := testStore.GetAccount(context.Background(), account.ID)
 	require.Error(t, deletedErr)
 	require.Empty(t, deletedAccount)
 }

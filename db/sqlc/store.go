@@ -2,7 +2,8 @@ package db
 
 import (
 	"context"
-	"database/sql"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Store interface {
@@ -15,31 +16,31 @@ type Store interface {
 // SQLStore provides all functions to execute db queries and transactions
 type SQLStore struct {
 	*Queries
-	db *sql.DB
+	connPool *pgxpool.Pool
 }
 
 // NewStore creates a new Store
-func NewStore(db *sql.DB) *SQLStore {
+func NewStore(connPool *pgxpool.Pool) *SQLStore {
 	return &SQLStore{
-		db:      db,
-		Queries: New(db),
+		connPool: connPool,
+		Queries:  New(connPool),
 	}
 }
 
 // execTx executes a function within a database transaction
 func (store *SQLStore) execTx(ctx context.Context, fn func(queries *Queries) error) error {
-	tx, err := store.db.BeginTx(ctx, nil)
+	tx, err := store.connPool.Begin(ctx)
 	if err != nil {
 		return err
 	}
 	q := New(tx)
 	err = fn(q)
 	if err != nil {
-		if rbErr := tx.Rollback(); rbErr != nil {
+		if rbErr := tx.Rollback(ctx); rbErr != nil {
 			return rbErr
 		}
 		return err
 	}
 
-	return tx.Commit()
+	return tx.Commit(ctx)
 }

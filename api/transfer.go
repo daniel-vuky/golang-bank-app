@@ -1,13 +1,14 @@
 package api
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
+	"net/http"
+
 	db "github.com/daniel-vuky/golang-bank-app/db/sqlc"
 	"github.com/daniel-vuky/golang-bank-app/token"
 	"github.com/gin-gonic/gin"
-	"net/http"
+	"github.com/jackc/pgx/v5"
 )
 
 // getAccountRequest defines the request body for createAccount handler
@@ -61,7 +62,7 @@ func (server *Server) createTransfer(ctx *gin.Context) {
 func (server *Server) isValidAccount(ctx *gin.Context, accountId int64, currency string) (db.Account, bool) {
 	account, err := server.store.GetAccount(ctx, accountId)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
 			return account, false
 		}

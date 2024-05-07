@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
-	"database/sql"
-	"github.com/daniel-vuky/golang-bank-app/mail"
 	"log"
 	"net"
 	"net/http"
+
+	"github.com/daniel-vuky/golang-bank-app/mail"
 
 	"github.com/daniel-vuky/golang-bank-app/api"
 	db "github.com/daniel-vuky/golang-bank-app/db/sqlc"
@@ -20,6 +20,8 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/hibiken/asynq"
+	_ "github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	fs2 "github.com/rakyll/statik/fs"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -31,7 +33,7 @@ func main() {
 	if loadConfigErr != nil {
 		log.Fatal("can not load the config file", loadConfigErr)
 	}
-	conn, connectErr := sql.Open(config.DBDriver, config.DBSource)
+	connPool, connectErr := pgxpool.New(context.Background(), config.DBSource)
 	if connectErr != nil {
 		log.Fatal("can not connect to the database", connectErr)
 	}
@@ -39,7 +41,7 @@ func main() {
 	// TODO: run db migration
 	runDbMigrations(config.MigrationUrl, config.DBSource)
 
-	store := db.NewStore(conn)
+	store := db.NewStore(connPool)
 
 	redisOpt := asynq.RedisClientOpt{
 		Addr: config.RedisAddress,

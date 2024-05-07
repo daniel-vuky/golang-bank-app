@@ -2,12 +2,13 @@ package worker
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
+
 	db "github.com/daniel-vuky/golang-bank-app/db/sqlc"
 	"github.com/daniel-vuky/golang-bank-app/util"
+	"github.com/jackc/pgx/v5"
 	"github.com/rs/zerolog/log"
 
 	"github.com/hibiken/asynq"
@@ -52,7 +53,7 @@ func (r *RedisTaskProcessor) ProcessTaskSendVerifyEmail(c context.Context, task 
 
 	user, err := r.store.GetUser(c, payload.Username)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return fmt.Errorf("user not found: %w", asynq.SkipRetry)
 		}
 		return fmt.Errorf("could not get user: %w", err)
@@ -81,6 +82,11 @@ func (r *RedisTaskProcessor) ProcessTaskSendVerifyEmail(c context.Context, task 
 	to := []string{user.Email}
 	err = r.mailer.SendEmail(subject, content, to, nil, nil, nil)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("username", user.Username).
+			Str("email", user.Email).
+			Msg("could not send email")
 		return fmt.Errorf("could not send email: %w", err)
 	}
 

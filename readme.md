@@ -1,11 +1,5 @@
 **Golang Bank App**
 
-![Static Badge](https://img.shields.io/badge/go-1.22)
-https://img.shields.io/badge/redis-7 
-https://img.shields.io/badge/postgres-16
-
-
-
 Welcome to Golang Bank App! This repository is a simple bank application built using Golang. 
 
 Features

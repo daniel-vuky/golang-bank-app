@@ -2,15 +2,16 @@ package gapi
 
 import (
 	"context"
-	"github.com/hibiken/asynq"
 	"time"
+
+	"github.com/hibiken/asynq"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	db "github.com/daniel-vuky/golang-bank-app/db/sqlc"
 	"github.com/daniel-vuky/golang-bank-app/pb"
 	"github.com/daniel-vuky/golang-bank-app/util"
 	"github.com/daniel-vuky/golang-bank-app/val"
 	"github.com/daniel-vuky/golang-bank-app/worker"
-	"github.com/lib/pq"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -54,7 +55,7 @@ func (server *Server) CreateUser(c context.Context, req *pb.CreateUserRequest) (
 	}
 	user, err := server.store.CreateUserTx(c, arg)
 	if err != nil {
-		if pqErr, ok := err.(*pq.Error); ok && pqErr.Code.Name() == "unique_violation" {
+		if pqErr, ok := err.(*pgconn.PgError); ok && pqErr.Code == "23505" {
 			return nil, status.Errorf(codes.Internal, "username or email already exists: %v", err)
 		}
 		return nil, status.Errorf(codes.Internal, "cannot create user: %v", err)

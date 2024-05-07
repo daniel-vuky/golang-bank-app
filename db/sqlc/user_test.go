@@ -2,8 +2,9 @@ package db
 
 import (
 	"context"
-	"github.com/daniel-vuky/golang-bank-app/util"
 	"testing"
+
+	"github.com/daniel-vuky/golang-bank-app/util"
 
 	"github.com/stretchr/testify/require"
 )
@@ -18,7 +19,7 @@ func createRandomUser(t *testing.T) User {
 		FullName:       util.RandomOwner(),
 		Email:          util.RandomEmail(),
 	}
-	createdUser, err := testQueries.CreateUser(context.Background(), user)
+	createdUser, err := testStore.CreateUser(context.Background(), user)
 	require.NoError(t, err)
 	require.NotEmpty(t, createdUser)
 	require.Equal(t, user.Username, createdUser.Username)
@@ -38,7 +39,7 @@ func TestQueries_CreateUser(t *testing.T) {
 // TestQueries_GetUser tests the GetUser method
 func TestQueries_GetUser(t *testing.T) {
 	user := createRandomUser(t)
-	foundUser, err := testQueries.GetUser(context.Background(), user.Username)
+	foundUser, err := testStore.GetUser(context.Background(), user.Username)
 	require.NoError(t, err)
 	require.NotEmpty(t, foundUser)
 	require.Equal(t, user.Username, foundUser.Username)

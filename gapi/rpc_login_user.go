@@ -2,11 +2,12 @@ package gapi
 
 import (
 	"context"
-	"database/sql"
 	"errors"
+
 	db "github.com/daniel-vuky/golang-bank-app/db/sqlc"
 	"github.com/daniel-vuky/golang-bank-app/pb"
 	"github.com/daniel-vuky/golang-bank-app/util"
+	"github.com/jackc/pgx/v5"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -15,7 +16,7 @@ import (
 func (server *Server) LoginUser(c context.Context, req *pb.LoginUserRequest) (*pb.LoginUserResponse, error) {
 	user, err := server.store.GetUser(c, req.GetUsername())
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, status.Errorf(codes.NotFound, "user not found: %v", err)
 		}
 	}

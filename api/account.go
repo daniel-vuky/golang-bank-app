@@ -1,13 +1,14 @@
 package api
 
 import (
-	"database/sql"
 	"errors"
+	"net/http"
+
 	db "github.com/daniel-vuky/golang-bank-app/db/sqlc"
 	"github.com/daniel-vuky/golang-bank-app/token"
 	"github.com/gin-gonic/gin"
-	"github.com/lib/pq"
-	"net/http"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 // getAccountRequest defines the request body for createAccount handler
@@ -30,9 +31,9 @@ func (server *Server) createAccount(c *gin.Context) {
 	}
 	account, err := server.store.CreateAccount(c, arg)
 	if err != nil {
-		if pqErr, ok := err.(*pq.Error); ok {
-			switch pqErr.Code.Name() {
-			case "foreign_key_violation", "unique_violation":
+		if pqErr, ok := err.(*pgconn.PgError); ok {
+			switch pqErr.Code {
+			case "23503", "23505":
 				c.JSON(http.StatusForbidden, errorResponse(err))
 				return
 			}
@@ -57,7 +58,7 @@ func (server *Server) getAccount(c *gin.Context) {
 	}
 	account, getAccountErr := server.store.GetAccount(c, req.ID)
 	if getAccountErr != nil {
-		if errors.Is(getAccountErr, sql.ErrNoRows) {
+		if errors.Is(getAccountErr, pgx.ErrNoRows) {
 			c.JSON(http.StatusNotFound, errorResponse(getAccountErr))
 			return
 		}

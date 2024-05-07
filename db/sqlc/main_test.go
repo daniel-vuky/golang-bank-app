@@ -1,17 +1,18 @@
 package db
 
 import (
-	"github.com/daniel-vuky/golang-bank-app/util"
+	"context"
 	"log"
 	"os"
 	"testing"
 
-	"database/sql"
+	"github.com/daniel-vuky/golang-bank-app/util"
+	"github.com/jackc/pgx/v5/pgxpool"
+
 	_ "github.com/lib/pq"
 )
 
-var testQueries *Queries
-var testDb *sql.DB
+var testStore Store
 
 func TestMain(m *testing.M) {
 	config, loadConfigErr := util.LoadConfig("../..")
@@ -19,11 +20,11 @@ func TestMain(m *testing.M) {
 		log.Fatal("can not load the config file", loadConfigErr)
 	}
 	var err error
-	testDb, err = sql.Open(config.DBDriver, config.DBSource)
+	connPool, err := pgxpool.New(context.Background(), config.DBSource)
 	if err != nil {
 		log.Fatal("can not connect to database", err)
 	}
-	testQueries = New(testDb)
+	testStore = NewStore(connPool)
 
 	os.Exit(m.Run())
 }

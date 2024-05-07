@@ -2,9 +2,10 @@ package db
 
 import (
 	"context"
+	"testing"
+
 	"github.com/daniel-vuky/golang-bank-app/util"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 // createRandomAccount creates a random account for testing
@@ -13,7 +14,7 @@ func createRandomEntry(t *testing.T, account *Account) Entry {
 		AccountID: account.ID,
 		Amount:    util.RandomMoney(),
 	}
-	entry, err := testQueries.CreateEntry(context.Background(), newEntry)
+	entry, err := testStore.CreateEntry(context.Background(), newEntry)
 	require.NoError(t, err)
 	require.NotEmpty(t, entry)
 	require.Equal(t, newEntry.AccountID, entry.AccountID)
@@ -38,10 +39,10 @@ func TestQueries_UpdateEntry(t *testing.T) {
 		ID:     entry.ID,
 		Amount: util.RandomMoney(),
 	}
-	err := testQueries.UpdateEntry(context.Background(), args)
+	err := testStore.UpdateEntry(context.Background(), args)
 	require.NoError(t, err)
 
-	updatedEntry, updatedErr := testQueries.GetEntry(context.Background(), entry.ID)
+	updatedEntry, updatedErr := testStore.GetEntry(context.Background(), entry.ID)
 	require.NoError(t, updatedErr)
 	require.NotEmpty(t, updatedEntry)
 	require.Equal(t, entry.ID, updatedEntry.ID)
@@ -54,7 +55,7 @@ func TestQueries_UpdateEntry(t *testing.T) {
 func TestQueries_GetEntry(t *testing.T) {
 	account := createRandomAccount(t)
 	entry := createRandomEntry(t, &account)
-	foundEntry, err := testQueries.GetEntry(context.Background(), entry.ID)
+	foundEntry, err := testStore.GetEntry(context.Background(), entry.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, foundEntry)
 	require.Equal(t, entry.ID, foundEntry.ID)
@@ -75,7 +76,7 @@ func TestQueries_ListEntries(t *testing.T) {
 		Limit:     5,
 		Offset:    0,
 	}
-	entries, err := testQueries.ListEntries(context.Background(), args)
+	entries, err := testStore.ListEntries(context.Background(), args)
 	require.NoError(t, err)
 	require.Len(t, entries, 5)
 
@@ -89,10 +90,10 @@ func TestQueries_ListEntries(t *testing.T) {
 func TestQueries_DeleteEntry(t *testing.T) {
 	account := createRandomAccount(t)
 	entry := createRandomEntry(t, &account)
-	err := testQueries.DeleteEntry(context.Background(), entry.ID)
+	err := testStore.DeleteEntry(context.Background(), entry.ID)
 	require.NoError(t, err)
 
-	deletedEntry, deletedErr := testQueries.GetEntry(context.Background(), entry.ID)
+	deletedEntry, deletedErr := testStore.GetEntry(context.Background(), entry.ID)
 	require.Error(t, deletedErr)
 	require.Empty(t, deletedEntry)
 }

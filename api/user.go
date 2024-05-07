@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"errors"
 	"net/http"
 	"time"
@@ -10,7 +9,8 @@ import (
 	"github.com/daniel-vuky/golang-bank-app/util"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/lib/pq"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 // createUserRequest defines the request body for createUser handler
@@ -61,7 +61,7 @@ func (server *Server) createUser(c *gin.Context) {
 	}
 	user, err := server.store.CreateUser(c, arg)
 	if err != nil {
-		if pqErr, ok := err.(*pq.Error); ok && pqErr.Code.Name() == "unique_violation" {
+		if pqErr, ok := err.(*pgconn.PgError); ok && pqErr.Code == "23505" {
 			c.JSON(http.StatusForbidden, errorResponse(err))
 			return
 		}
@@ -86,7 +86,7 @@ func (server *Server) getUser(c *gin.Context) {
 	}
 	user, getUserErr := server.store.GetUser(c, req.Username)
 	if getUserErr != nil {
-		if errors.Is(getUserErr, sql.ErrNoRows) {
+		if errors.Is(getUserErr, pgx.ErrNoRows) {
 			c.JSON(http.StatusNotFound, errorResponse(getUserErr))
 			return
 		}
@@ -119,7 +119,7 @@ func (server *Server) login(c *gin.Context) {
 
 	user, err := server.store.GetUser(c, req.Username)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			c.JSON(http.StatusNotFound, errorResponse(err))
 			return
 		}

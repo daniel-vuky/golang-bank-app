@@ -2,13 +2,13 @@ package db
 
 import (
 	"context"
+	"testing"
+
 	"github.com/daniel-vuky/golang-bank-app/util"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestStore_TransferTx(t *testing.T) {
-	store := NewStore(testDb)
 
 	fromAccount := createRandomAccount(t)
 	toAccount := createRandomAccount(t)
@@ -21,7 +21,7 @@ func TestStore_TransferTx(t *testing.T) {
 
 	for i := 0; i < n; i++ {
 		go func() {
-			result, err := store.TransferTx(context.Background(), TransferTxParams{
+			result, err := testStore.TransferTx(context.Background(), TransferTxParams{
 				FromAccountID: fromAccount.ID,
 				ToAccountID:   toAccount.ID,
 				Amount:        amount,
@@ -50,7 +50,7 @@ func TestStore_TransferTx(t *testing.T) {
 		require.NotZero(t, transfer.ID)
 		require.NotZero(t, transfer.CreatedAt)
 
-		_, err = store.GetTransfer(context.Background(), transfer.ID)
+		_, err = testStore.GetTransfer(context.Background(), transfer.ID)
 		require.NoError(t, err)
 
 		// Check entries
@@ -61,7 +61,7 @@ func TestStore_TransferTx(t *testing.T) {
 		require.NotZero(t, fromEntry.ID)
 		require.NotZero(t, fromEntry.CreatedAt)
 
-		_, err = store.GetEntry(context.Background(), fromEntry.ID)
+		_, err = testStore.GetEntry(context.Background(), fromEntry.ID)
 		require.NoError(t, err)
 
 		toEntry := result.ToEntry
@@ -71,7 +71,7 @@ func TestStore_TransferTx(t *testing.T) {
 		require.NotZero(t, toEntry.ID)
 		require.NotZero(t, toEntry.CreatedAt)
 
-		_, err = store.GetEntry(context.Background(), toEntry.ID)
+		_, err = testStore.GetEntry(context.Background(), toEntry.ID)
 		require.NoError(t, err)
 
 		// check accounts
@@ -97,11 +97,11 @@ func TestStore_TransferTx(t *testing.T) {
 	}
 
 	// check the final updated balances
-	fromAccountUpdated, fromAccountUpdatedErr := testQueries.GetAccount(context.Background(), fromAccount.ID)
+	fromAccountUpdated, fromAccountUpdatedErr := testStore.GetAccount(context.Background(), fromAccount.ID)
 	require.NoError(t, fromAccountUpdatedErr)
 	require.NotEmpty(t, fromAccountUpdated)
 
-	toAccountUpdated, toAccountUpdatedErr := testQueries.GetAccount(context.Background(), toAccount.ID)
+	toAccountUpdated, toAccountUpdatedErr := testStore.GetAccount(context.Background(), toAccount.ID)
 	require.NoError(t, toAccountUpdatedErr)
 	require.NotEmpty(t, toAccountUpdated)
 

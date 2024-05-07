@@ -1,11 +1,12 @@
 package api
 
 import (
-	"database/sql"
 	"errors"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5"
 )
 
 type renewAccessTokenRequest struct {
@@ -32,7 +33,7 @@ func (server *Server) renewAccessToken(c *gin.Context) {
 
 	session, err := server.store.GetSession(c, refreshPayload.ID)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			c.JSON(http.StatusNotFound, errorResponse(err))
 			return
 		}

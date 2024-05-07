@@ -1,6 +1,6 @@
 **Golang Bank App**
 
-https://img.shields.io/badge/go-1.22 
+![Static Badge](https://img.shields.io/badge/go-1.22)
 https://img.shields.io/badge/redis-7 
 https://img.shields.io/badge/postgres-16
 

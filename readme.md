@@ -1,6 +1,8 @@
 **Golang Bank App**
 
-https://img.shields.io/badge/go-1.22 https://img.shields.io/badge/redis-7 https://img.shields.io/badge/postgres-16
+https://img.shields.io/badge/go-1.22 
+https://img.shields.io/badge/redis-7 
+https://img.shields.io/badge/postgres-16
 
 
 
@@ -47,13 +49,16 @@ docker compose up
 ```
 
 **Swagger**
+
 Visit http://localhost:8080/swagger to access the Golang Bank App Grpc APIs.
 For Http Apis list will be update soon (or you can check from api/routes.go)
 
 **Contributing**
+
 This's a project for testing some new concept but feel free for contributing for my my project
 
 **License**
+
 This project is licensed under the MIT License. See the LICENSE file for details.
 
 **Acknowledgments**
